@@ -174,8 +174,12 @@ jobs:
           chmod 600 ~/.ssh/dvc_key
           dvc remote modify --local local_remote keyfile ~/.ssh/dvc_key
           dvc pull
+
       - name: Recuperar dataset via DVC
         run: dvc pull dataset/exports/epi-v1
+      - name: Corrigir caminho do dataset
+        run: |
+          sed -i 's|^path:.*|path: .|' dataset/exports/epi-v1/data.yaml
       - name: Executar quality gate com dataset customizado
         run: |
           python scripts/validate_model.py \
