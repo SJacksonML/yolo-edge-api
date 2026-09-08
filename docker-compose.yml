@@ -13,7 +13,7 @@ services:
       - ./output:/app/output # resultados gravados aqui
       - ./images:/app/images:ro # imagens de teste
     environment:
-      - MODEL_NAME=yolov8n.pt
+      - MODEL_NAME=yolo-epi.pt
       - MODELS_DIR=/app/models
     networks:
       - yolo-net

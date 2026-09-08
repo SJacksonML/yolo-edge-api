@@ -31,6 +31,7 @@ echo "[INFO] Imagem atual: $PREVIOUS"
 # ── Baixa a nova imagem ──────────────────────────────────────
 echo "[1/4] Baixando nova imagem..."
 docker compose pull
+python3 -m dvc pull models/yolo-epi.pt
 
 
 # ── Sobe a nova versão ───────────────────────────────────────
@@ -41,7 +42,7 @@ for name in yolo-api yolo-client; do
         docker rm -f "$name"
     fi
 done
-docker compose up -d --remove-orphans
+docker compose up -d --build --remove-orphans
 
 
 # ── Aguarda o serviço estabilizar ────────────────────────────
