@@ -12,6 +12,7 @@ services:
       - ./models:/app/models:ro # pesos somente-leitura
       - ./output:/app/output # resultados gravados aqui
       - ./images:/app/images:ro # imagens de teste
+      - ./preprocessing:/app/preprocessing:ro
     environment:
       - MODEL_NAME=yolo-epi.pt
       - MODELS_DIR=/app/models
@@ -39,6 +40,34 @@ services:
     depends_on:
       yolo-api:
         condition: service_healthy # aguarda healthcheck passar
+
+  yolo-stream:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: yolo-stream
+    ports:
+      - "5000:5000"
+    privileged: true
+    volumes:
+      - ./stream:/app/stream
+      - ./models:/app/models:ro
+      - ./preprocessing:/app/preprocessing:ro
+      - /dev:/dev
+      - /run/udev:/run/udev:ro
+    environment:
+      - MODEL_NAME=yolo-epi.pt
+    command: >
+      python3 stream/mjpeg_server.py
+      --device 0
+      --model models/yolo-epi.pt
+      --infer-every 3
+      --infer-size 320
+      --port 5000
+    restart: unless-stopped
+    depends_on:
+      yolo-api:
+        condition: service_healthy
 
 networks:
   yolo-net:
